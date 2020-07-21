@@ -1,0 +1,1 @@
+pyinstaller elCrapo.spec
