@@ -1,0 +1,21 @@
+{
+    "83": "previousTrack",
+    "84": "playPause",
+    "85": "nextTrack",
+    "42": [
+        "playAudio",
+        "./soundboard/Bruh.wav"
+    ],
+    "95": [
+        "playAudio",
+        "./soundboard/spriteCranberry.wav"
+    ],
+    "96": [
+        "playAudio",
+        "./soundboard/shinnyTeeth.wav"
+    ],
+    "97": "",
+    "86": "",
+    "0": "",
+    "93": "recordAudio"
+}
