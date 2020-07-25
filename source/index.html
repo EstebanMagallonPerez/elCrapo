@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<title>ElCrapo Configurator</title>
+	<script type="text/javascript" src="/eel.js"></script>
+	<style>
+		.keyboard
+		{
+			/*background: #313131;*/
+			padding-top: 50px;
+			border-radius: 6px;
+		}
+		.hidden
+		{
+			display: none;
+		}
+		.row
+		{
+			margin-left: 10px;
+    		margin-right: 10px;
+		}
+		.key
+		{
+			background: #313131;
+			color: white;
+			padding: 10px;
+			border: black;
+			border: 4px black solid;
+			border-radius: 8px;
+    		margin-right: 4px;
+			margin-bottom: 4px;
+		}
+	</style>
+</head>
+<body class="container">
+	<br>
+	<form id="deviceForm">
+		<div class="form-group row">
+			<label for="libUsbDevices" class="col-sm-2 col-form-label">Lib USB Device</label>
+			<div class="col-sm-10">
+				<select class="custom-select mr-sm-2" id="libUsbDevices">
+					<option selected>None...</option>
+				</select>
+			</div>
+		</div>
+		<input type="text" class="form-control hidden" id="productID" placeholder="">
+		<input type="text" class="form-control hidden" id="vendorID" placeholder="">
+		<input type="text" class="form-control hidden" id="interface" placeholder="">
+		<div class="form-group row">
+			<label for="playbackDevice" class="col-sm-2 col-form-label">Playback Device</label>
+			<div class="col-sm-10">
+				<select class="custom-select mr-sm-2" id="playbackDevice">
+					<option selected>None...</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="recordingDevice" class="col-sm-2 col-form-label">Recording Device</label>
+			<div class="col-sm-10">
+				<select class="custom-select mr-sm-2" id="recordingDevice">
+					<option selected>None...</option>
+				</select>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-primary">Connect Device</button>
+	</form>
+
+
+	<button onClick="addRow()">Add row</button>
+	<div>Add a row, then type the keys that you want in that row :)</div>
+	<div id="keyboard" class="keyboard">
+	</div>
+
+
+
+	<div class="modal fade" id="keyModal" tabindex="-1" role="dialog" aria-labelledby="keyModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="keyModalLabel">Key Config</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="keyForm">
+					<input type="text" class="form-control hidden" id="key" placeholder="">
+					<div class="form-group">
+						<label for="keyCommand" class="col-form-label">Key Action</label>
+						<select class="custom-select mr-sm-2" id="keyCommand">
+							<option selected>None...</option>
+							<option title="Jumps to Previous Track" value="previousTrack">Previous Track</option>
+							<option title="Toggles Play/Pause" value="playPause">Play/Pause</option>
+							<option title="Jumps to Next Track" value="nextTrack">Next Track</option>
+							<option title="Records Audio while holding the button, and binds to the button pressed durring the recording" value="recordAudio">Record Audio</option>
+							<option title="Plays the WAV file at the path provided" value="playAudio">Play Sound</option>
+							<option title="Presses the keys ',' for sequential '+' for combined" value="presskey">Press Key</option>
+							
+						</select>
+					</div>
+					<input type="text" class="form-control hidden" id="attribute" placeholder="">
+					<!--
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label">Recipient:</label>
+						<input type="text" class="form-control" id="recipient-name">
+					</div>
+					-->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button onclick="keyformSubmit(this)" type="button" class="btn btn-primary" data-dismiss="modal">Update Key</button>
+					</div>
+				</form>
+			</div>
+			
+			</div>
+		</div>
+	</div>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script>
+		//Script for form population, and submitting values
+		devs = []
+		async function populateForms()
+		{
+			formVals = await eel.getConfig()();
+			for (var key in formVals){
+				$('#'+key+' option[value="'+formVals[key]+'"]').prop('selected', true)
+				console.log( key, formVals[key] );
+			}
+		}
+
+		function formSubmit(event) {
+			$("#"+$(event.path[0]).attr('id')+" :input").each(function(){
+
+				var input = $(this);
+				val = input.val()
+				key = input.attr('id')
+				var classList = input.attr('class')
+				if(classList.indexOf("hidden")>0)
+				{
+					return
+				}
+				console.log(classList)
+				if (key == "libUsbDevices")
+				{
+					temp = devs[val].idProduct
+					eel.updateConfig("productID",temp)
+					eel.updateConfig("vendorID",devs[val].idVendor)
+					eel.updateConfig("interface",devs[val].interface)
+				}
+				if (val != "None...")
+				{
+					eel.updateConfig(key,val)
+				}
+				console.log(key,val)
+			});
+			eel.usbListener()
+			event.preventDefault();
+		}
+		function keyformSubmit(event) {
+			console.log("keyformSubmit")
+			console.log(event)
+			keyCode = -1
+			$("#keyForm :input").each(function(){
+
+				var input = $(this);
+				val = input.val()
+				key = input.attr('id')
+				var classList = input.attr('class')
+				if (key != undefined && val != undefined)
+				{
+					switch(key) {
+						case "key":
+							keyCode = val
+							break;
+						case "keyCommand":
+							if (keyCode != -1)
+							{
+								if(val == "playAudio" || val == "presskey")
+								{
+									eel.updateKeyConfig(keyCode,[val,$("#attribute").val()])
+								}
+								else
+								{
+									eel.updateKeyConfig(keyCode,val)
+								}
+								
+							}
+							break;
+						default:
+							// code block
+					}
+				}
+				
+			});
+		}
+
+		function attachFormSubmitEvent(formId){
+			document.getElementById(formId).addEventListener("submit", formSubmit);
+		}
+		document.getElementById("deviceForm").addEventListener("submit", formSubmit);
+		document.getElementById("keyForm").addEventListener("submit", keyformSubmit);
+
+		async function populateAudioDevice(eelFunction,deviceElem)
+		{
+			pbdev = await eelFunction();
+			for(var i = 0; i < pbdev.length; i++)
+			{
+				option = document.createElement('option');
+				option.setAttribute("value", pbdev[i].deviceID);
+				option.innerHTML = pbdev[i].name
+				deviceElem.append(option)
+			}
+		}
+
+		async function populateUSBDevices()
+		{
+			devs = await eel.get_libUSB_devices()();
+			deviceElem = document.getElementById("libUsbDevices");
+			for(var i = 0; i < devs.length; i++)
+			{
+				option = document.createElement('option');
+				option.setAttribute("value", i);
+				option.innerHTML = "Product ID: "+devs[i].idProduct+" Vendor ID: "+devs[i].idVendor+" Interface: "+devs[i].interface
+				deviceElem.append(option)
+			}
+		}
+		populateAudioDevice(eel.get_playback_devices(),document.getElementById("playbackDevice"))
+		populateAudioDevice(eel.get_recording_devices(),document.getElementById("recordingDevice"))
+		populateUSBDevices()
+		populateForms()
+	</script>
+
+	<script>
+		var keyboardElement = document.getElementById("keyboard");
+		var currentRow = null
+
+		eel.expose(registerKey);
+		function registerKey(key){
+			if (currentRow == null)
+			{
+				return
+			}
+			let keyElement = document.createElement("div");
+			keyElement.className = "key";
+			keyElement.innerHTML = key
+			keyElement.setAttribute("data-toggle", "modal");
+			keyElement.setAttribute("data-target", "#keyModal");
+			keyElement.setAttribute("data-key", ""+key);
+			currentRow.appendChild(keyElement)
+		};
+		async function loadLayout()
+		{
+			keyboardLayout = await eel.getKeyOrder()();
+			console.log("keyboardLayout",keyboardLayout)
+			for (var index in keyboardLayout){
+				console.log(index)
+				if(keyboardLayout[index].indexOf("row") > -1)
+				{
+					addRow()
+				}else
+				{
+					registerKey(keyboardLayout[index])
+				}
+			}
+
+		}
+		rowCount = 0
+		loadLayout()
+		function addRow()
+		{
+			var rowElement = document.createElement("div");
+			rowElement.className = "row";
+			currentRow = rowElement
+			keyboardElement.appendChild(rowElement);
+			eel.updateKeyConfig("row_"+rowCount,"")
+			rowCount++;
+		}
+</script>
+</body>
+</html>
+<script>
+	$('#keyCommand').change(function(e){
+		value = $(e.currentTarget).val()
+		if(value == "playAudio" || value == "presskey")
+		{
+			$("#attribute").removeClass("hidden")
+		}else
+		{
+			$("#attribute").addClass("hidden")
+		}
+	})
+	$('#keyModal').on('show.bs.modal', async function (event) {
+		var button = $(event.relatedTarget)
+		var key = button.data('key')
+		var modal = $(this)
+
+		keyProperties = await eel.getKeyConfig(key)();
+		modal.find('.modal-title').text('Config for: ' + key)
+		modal.find('#key').val(key)
+		if (Array.isArray(keyProperties))
+		{
+			console.log("this is an array")
+			modal.find('#keyCommand').val(keyProperties[0])
+			modal.find('#attribute').val(keyProperties[1])
+			$("#attribute").removeClass("hidden")
+		}else
+		{
+			console.log("this is not an array")
+			modal.find('#keyCommand').val(keyProperties)
+			$("#attribute").addClass("hidden")
+		}
+	})
+</script>

@@ -86,9 +86,9 @@ def recordAudioThread():
 		filename = "./soundboard/recording_"+str(timeObj.hour)+'_'+str(timeObj.minute)+'_'+str(timeObj.second)+".wav"
 		p.terminate()
 		wf = wave.open(filename, 'wb')
-		wf.setnchannels(channels)
-		wf.setsampwidth(p.get_sample_size(sample_format))
-		wf.setframerate(fs)
+		wf.setnchannels(2)
+		wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+		wf.setframerate(44100)
 		wf.writeframes(b''.join(frames))
 		wf.close()
 	
@@ -160,12 +160,12 @@ def presskey(key):
 
 def loadJson():
 	global keys  
-	with open('config.json') as json_file: 
+	with open('./source/keyConfig.json') as json_file: 
 		keys = json.load(json_file)
 
 def updateJson():
 	global keys
-	with open("config.json", "w") as write_file:
+	with open("./source/keyConfig.json", "w") as write_file:
 		json.dump(keys, write_file, indent=4)
 	print(keys)
 
@@ -185,6 +185,7 @@ def start():
 					if strKey not in keys:
 						print("key is: ",strKey)
 						print(keys)
+						keys[strKey] = ""
 						updateJson()
 						return
 					pressedKeys.append(int(strKey))
@@ -210,9 +211,13 @@ def start():
 		devs = usb.core.find(find_all=True)
 		# loop through devices, printing vendor and product ids in decimal and hex
 		dev = None
+		interface = 0
+		vendorID = 1241
+		productID = 4611
 		for cfg in devs:
-			interface = 0
-			dev = cfg
+			if (cfg[0][(0,0)].bInterfaceNumber == interface and cfg.idVendor == vendorID and cfg.idProduct == productID):
+				dev = cfg
+				break
 
 		endpoint = dev[0][(0,0)][0]
 		try:

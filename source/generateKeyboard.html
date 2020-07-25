@@ -1,0 +1,70 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Key Display for OBS</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/default.css">
+        <link rel="stylesheet" href="css/generator.css">
+    </head>
+    <body>
+        <button onClick="addRow()">Add row</button>
+        <button onClick="exportJsontoTxt()">Export JSON</button>
+        <div>Add a row, then type the keys that you want in that row :)</div>
+        <div id="keyboard" class="keyboard">
+        </div>
+        <button onClick="copyToClipBoard()">Copy to ClipBoard</button>
+        <textarea style="width: 100%; height: 700px;" id="jsonOutput"></textarea>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+        <script src="scripts/key.js"></script>
+    </body>
+</html>
+    <body>
+        <script>
+            exportJson = []
+            eel.expose(registerKey);
+            function registerKey(key){
+                if (currentRow == null)
+                {
+                    return
+                }
+                let keyElement = document.createElement("div");
+                keyElement.className = "key";
+                keyElement.innerHTML = data.value
+                currentRow.appendChild(keyElement)
+                currentRowLength = exportJson[exportJson.length-1].length
+                exportJson[exportJson.length-1][currentRowLength] = new Key(data.value,data.scan_code,0,"")   
+            };
+
+            var keyboardElement = document.getElementById("keyboard");
+            var currentRow = null
+            function addRow()
+            {
+                var rowElement = document.createElement("div");
+                rowElement.className = "row";
+                currentRow = rowElement
+                keyboardElement.appendChild(rowElement);
+                exportJson[exportJson.length] = []
+            }
+
+            function exportJsontoTxt()
+            {
+                document.getElementById("jsonOutput").innerHTML = JSON.stringify(exportJson, null, 4);
+            }
+
+            function copyToClipBoard() 
+            {
+                var copyText = document.getElementById("jsonOutput");
+                copyText.select();
+                document.execCommand("copy");
+                alert("Copied the text: " + copyText.value);
+            }
+        </script>
+        <script>
+        </script>
+    </body>
+</html>
