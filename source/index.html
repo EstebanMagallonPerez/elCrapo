@@ -105,12 +105,6 @@
 						</select>
 					</div>
 					<input type="text" class="form-control hidden" id="attribute" placeholder="">
-					<!--
-					<div class="form-group">
-						<label for="recipient-name" class="col-form-label">Recipient:</label>
-						<input type="text" class="form-control" id="recipient-name">
-					</div>
-					-->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 						<button onclick="keyformSubmit(this)" type="button" class="btn btn-primary" data-dismiss="modal">Update Key</button>
@@ -239,9 +233,7 @@
 		populateAudioDevice(eel.get_recording_devices(),document.getElementById("recordingDevice"))
 		populateUSBDevices()
 		populateForms()
-	</script>
 
-	<script>
 		var keyboardElement = document.getElementById("keyboard");
 		var currentRow = null
 
@@ -286,39 +278,38 @@
 			eel.updateKeyConfig("row_"+rowCount,"")
 			rowCount++;
 		}
-</script>
+
+		$('#keyCommand').change(function(e){
+			value = $(e.currentTarget).val()
+			if(value == "playAudio" || value == "presskey")
+			{
+				$("#attribute").removeClass("hidden")
+			}else
+			{
+				$("#attribute").addClass("hidden")
+			}
+		})
+		$('#keyModal').on('show.bs.modal', async function (event) {
+			var button = $(event.relatedTarget)
+			var key = button.data('key')
+			var modal = $(this)
+
+			keyProperties = await eel.getKeyConfig(key)();
+			modal.find('.modal-title').text('Config for: ' + key)
+			modal.find('#key').val(key)
+			if (Array.isArray(keyProperties))
+			{
+				console.log("this is an array")
+				modal.find('#keyCommand').val(keyProperties[0])
+				modal.find('#attribute').val(keyProperties[1])
+				$("#attribute").removeClass("hidden")
+			}else
+			{
+				console.log("this is not an array")
+				modal.find('#keyCommand').val(keyProperties)
+				$("#attribute").addClass("hidden")
+			}
+		})
+	</script>
 </body>
 </html>
-<script>
-	$('#keyCommand').change(function(e){
-		value = $(e.currentTarget).val()
-		if(value == "playAudio" || value == "presskey")
-		{
-			$("#attribute").removeClass("hidden")
-		}else
-		{
-			$("#attribute").addClass("hidden")
-		}
-	})
-	$('#keyModal').on('show.bs.modal', async function (event) {
-		var button = $(event.relatedTarget)
-		var key = button.data('key')
-		var modal = $(this)
-
-		keyProperties = await eel.getKeyConfig(key)();
-		modal.find('.modal-title').text('Config for: ' + key)
-		modal.find('#key').val(key)
-		if (Array.isArray(keyProperties))
-		{
-			console.log("this is an array")
-			modal.find('#keyCommand').val(keyProperties[0])
-			modal.find('#attribute').val(keyProperties[1])
-			$("#attribute").removeClass("hidden")
-		}else
-		{
-			console.log("this is not an array")
-			modal.find('#keyCommand').val(keyProperties)
-			$("#attribute").addClass("hidden")
-		}
-	})
-</script>
