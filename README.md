@@ -2,7 +2,7 @@
 I didn't want to buy a stream deck, so I made this
 
 ### FAQ(and by this I mean litterally the only question)
-Q: Why don't I just use AutoHotkey?
+Q: Why don't I just use AutoHotkey?  
 A: Because I am listening to the USB input and not keypresses so there is no key overlaps, and one keyboard can have all the default keypresses while a secondary keyboard with the libusb driver can perform any actions. Additionaly you can also listen on a per device basis, so there are theoretically an unlimited number of hotkeys available to you 
 
 ### Setup
