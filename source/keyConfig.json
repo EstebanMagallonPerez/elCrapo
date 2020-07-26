@@ -8,8 +8,14 @@
         "./soundboard/Bruh.wav"
     ],
     "row_1": "",
-    "95": "",
-    "96": "",
+    "95": [
+        "playAudio",
+        "./soundboard/spriteCranberry.wav"
+    ],
+    "96": [
+        "playAudio",
+        "./soundboard/shinnyTeeth.wav"
+    ],
     "97": [
         "presskey",
         "ctrl+shift+l"
@@ -19,9 +25,15 @@
         "ctrl+shift+k"
     ],
     "row_2": "",
-    "92": "",
-    "93": "",
-    "94": "",
+    "92": [
+        "presskey",
+        "ctrl+shift+m"
+    ],
+    "93": "recordAudio",
+    "94": [
+        "playAudio",
+        "./soundboard/recording_12_15_1.wav"
+    ],
     "87": "",
     "row_3": "",
     "89": "",

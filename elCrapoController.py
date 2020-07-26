@@ -160,12 +160,12 @@ def presskey(key):
 
 def loadJson():
 	global keys  
-	with open('./source/keyConfig.json') as json_file: 
+	with open('./config/keyConfig.json') as json_file: 
 		keys = json.load(json_file)
 
 def updateJson():
 	global keys
-	with open("./source/keyConfig.json", "w") as write_file:
+	with open("./config/keyConfig.json", "w") as write_file:
 		json.dump(keys, write_file, indent=4)
 	print(keys)
 
@@ -210,10 +210,13 @@ def start():
 	def usbListener():
 		devs = usb.core.find(find_all=True)
 		# loop through devices, printing vendor and product ids in decimal and hex
+		config = {}
+		with open('./config/config.json') as json_file: 
+			config = json.load(json_file)
 		dev = None
-		interface = 0
-		vendorID = 1241
-		productID = 4611
+		interface = config["interface"]
+		vendorID = config["vendorID"]
+		productID = config["productID"]
 		for cfg in devs:
 			if (cfg[0][(0,0)].bInterfaceNumber == interface and cfg.idVendor == vendorID and cfg.idProduct == productID):
 				dev = cfg

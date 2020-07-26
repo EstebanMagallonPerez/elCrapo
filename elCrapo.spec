@@ -6,7 +6,6 @@ binaries = [
 ]
 
 a = Analysis(['elCrapo.py'],
-             pathex=['D:\\Desktop\\Repos\\fps camper'],
              binaries=binaries,
              datas=[],
              hiddenimports=['pyaudio'],
