@@ -1,0 +1,3 @@
+import elCrapoConfigurator
+
+elCrapoConfigurator.start()

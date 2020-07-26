@@ -1,0 +1,1 @@
+pyinstaller elCrapoConfigLauncher.spec

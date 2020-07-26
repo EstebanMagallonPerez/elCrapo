@@ -5,17 +5,35 @@
     "85": "nextTrack",
     "42": [
         "playAudio",
-        "D:\\Desktop\\Repos\\elCrapo\\soundboard\\Bruh.wav"
+        "./soundboard/Bruh.wav"
     ],
     "row_1": "",
-    "95": "",
-    "96": "",
-    "97": "",
-    "86": "",
+    "95": [
+        "playAudio",
+        "./soundboard/spriteCranberry.wav"
+    ],
+    "96": [
+        "playAudio",
+        "./soundboard/shinnyTeeth.wav"
+    ],
+    "97": [
+        "presskey",
+        "ctrl+shift+l"
+    ],
+    "86": [
+        "presskey",
+        "ctrl+shift+k"
+    ],
     "row_2": "",
-    "92": "",
-    "93": "",
-    "94": "",
+    "92": [
+        "presskey",
+        "ctrl+shift+m"
+    ],
+    "93": "recordAudio",
+    "94": [
+        "playAudio",
+        "./soundboard/chickenNugger.wav"
+    ],
     "87": "",
     "row_3": "",
     "89": "",
@@ -23,7 +41,7 @@
     "91": "",
     "88": "",
     "row_4": "",
-    "row_5": "",
     "98": "",
-    "99": ""
+    "99": "",
+    "0": ""
 }

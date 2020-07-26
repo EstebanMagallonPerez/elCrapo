@@ -4,8 +4,8 @@ import json
 import pyaudio
 import threading
 
-configFile = "./source/config.json"
-keyConfigFile = "./source/keyConfig.json"
+configFile = "./config/config.json"
+keyConfigFile = "./config/keyConfig.json"
 config = {}
 keyConfig = {}
 
@@ -21,14 +21,12 @@ try:
 except:
 	config = {}
 
-print(config)
-
 @eel.expose
 def getConfig(key = None):
-	if str(key) in keyConfig:
-		return keyConfig[str(key)]
+	if str(key) in config:
+		return config[str(key)]
 	else:
-		return keyConfig
+		return config
 
 
 @eel.expose
@@ -68,7 +66,7 @@ def get_playback_devices():
 	p = pyaudio.PyAudio()
 	for i in range(p.get_device_count()):
 		dev = p.get_device_info_by_index(i)
-		if dev["hostApi"] == 0 and dev["maxInputChannels"] > 0:
+		if dev["hostApi"] == 0 and dev["maxOutputChannels"] > 0:
 			prop = {
 				"deviceID": dev['index'],
 				"name":dev['name']
@@ -106,7 +104,7 @@ pressedKeys = []
 
 def updateJson():
 	global keyConfig
-	with open("./source/keyConfig.json", "w") as write_file:
+	with open(keyConfigFile, "w") as write_file:
 		json.dump(keyConfig, write_file, indent=4)
 	print(keyConfig)
 
@@ -131,6 +129,7 @@ def pressed(sentKeys):
 def usbListener():
 	t1 = threading.Thread(target=usbListenerThread)
 	t1.start()
+
 def usbListenerThread():
 	global config
 	global keyConfig
@@ -173,5 +172,7 @@ def usbListenerThread():
 				usb.util.release_interface(dev, interface)
 				continue
 
-eel.init('source')
-eel.start('index.html')
+
+def start():
+	eel.init('source')
+	eel.start('index.html')

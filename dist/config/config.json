@@ -3,6 +3,6 @@
     "vendorID": 1241,
     "interface": 0,
     "libUsbDevices": "0",
-    "playbackDevice": "1",
+    "playbackDevice": "10",
     "recordingDevice": "42"
 }

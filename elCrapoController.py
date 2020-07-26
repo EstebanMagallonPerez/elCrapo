@@ -18,22 +18,26 @@ chunk = 1024
 pressedKeys = []
 recordKey = 93
 
+config = {}
+with open('./config/config.json') as json_file: 
+	config = json.load(json_file)
+
 def playAudioThread(file):
 	if recordKey in pressedKeys:
 		return
 	p = pyaudio.PyAudio()
-	for i in range(p.get_device_count()):
-		dev = p.get_device_info_by_index(i)
-		if 'VoiceMeeter Aux Input' in dev['name'] and dev["hostApi"] == 0:
-			print(dev)
-			dev_index = dev['index']
+
 	wf = wave.open(file)
-	stream = p.open(format =
-					p.get_format_from_width(wf.getsampwidth()),
-					channels = wf.getnchannels(),
-					rate = wf.getframerate(),
-					output_device_index = dev_index,
-					output = True)
+	args = {	'format':p.get_format_from_width(wf.getsampwidth()),
+				'channels':wf.getnchannels(),
+				'rate' : wf.getframerate(),
+				'output' : True
+	}
+
+	if "playbackDevice" in config:
+		args["output_device_index"] = int(config["playbackDevice"])
+
+	stream = p.open(**args)
 	data = wf.readframes(chunk)
 	
 	while data != b'':
@@ -50,20 +54,19 @@ def playAudio(file):
 def recordAudioThread():
 	global pressedKeys
 	global keys
-	dev_index = 0
-	print("calling record Audio")
 	p = pyaudio.PyAudio()
-	for i in range(p.get_device_count()):
-		dev = p.get_device_info_by_index(i)
-		if 'VoiceMeeter Output (VB-Audio VoiceMeeter' in dev['name'] and dev["hostApi"] == 3:
-			dev_index = dev['index']
 
-	stream = p.open(format=pyaudio.paInt16,
-					channels=2,
-					rate=44100,
-					frames_per_buffer=chunk,
-					input_device_index = dev_index,
-					input=True)
+	args = {	'format':pyaudio.paInt16,
+				'channels':2,
+				"frames_per_buffer":chunk,
+				'rate' : 44100,
+				'input' : True
+	}
+
+	if "recordingDevice" in config:
+		args["input_device_index"] = int(config["recordingDevice"])
+
+	stream = p.open(**args)
 
 	frames = []
 	keyToSet = None
@@ -210,9 +213,6 @@ def start():
 	def usbListener():
 		devs = usb.core.find(find_all=True)
 		# loop through devices, printing vendor and product ids in decimal and hex
-		config = {}
-		with open('./config/config.json') as json_file: 
-			config = json.load(json_file)
 		dev = None
 		interface = config["interface"]
 		vendorID = config["vendorID"]
